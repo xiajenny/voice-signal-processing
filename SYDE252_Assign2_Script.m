@@ -19,14 +19,45 @@ sound(newY,sr);
 % the spectra of the original signal and the synthesized signal
 % Comment on your observation
 
+figure;
 
+% Original Spectrum
+Fsampling = sr;
+dt = 1/Fsampling;
+N = length(y);
+t = 0 + (0:N-1)*dt;
+freq = horzcat(-linspace(0,N/2,N/2 )*Fsampling/N,linspace(N/2 + 1 ,0,N/2 + 1)*Fsampling/N);
+rad = freq * 2 * pi;
+% spectrum = fourier_transform(y, t, rad); 
+% our function from the last assignment is much slower than fft()
+spectrum = fft(y);
+subplot(2, 1, 1);
+plot(freq, spectrum);
+title('Original Spectrum');
+xlabel('Frequency (Hz)');
 
+% New Spectrum
+N = length(newY);
+t = 0 + (0:N-1)*dt;
+freq = horzcat(-linspace(0,N/2,N/2 )*Fsampling/N,linspace(N/2,0,N/2)*Fsampling/N);
+rad = freq * 2 * pi;
+% spectrum2 = fourier_transform(newY, t, rad); 
+% our function from the last assignment is much slower than fft()
+spectrum2 = fft(newY);
+subplot(2, 1, 2);
+plot(freq, spectrum2);
+title('New Spectrum');
+xlabel('Frequency (Hz)');
 
-
-
-
-
-
+% We can see that the synthesized spectrum has roughly the same frequency
+% peaks as the original spectrum. However, the synthesized spectrum appears
+% to contain artifacts in the lower frequencies. For example, there
+% are frequencies present around the 0-500Hz range in the synthesized
+% fourier transform plot that were not present in the original spectrum. In
+% addition, the original spectrum had clear peaks at around 150Hz and
+% 250Hz, with the peak at 250Hz having a higher magnitude than the 150Hz
+% peak. However, in the synthesized spectrum, the peak at 150Hz appears to
+% be slightly larger than the 250Hz peak instead.
 
 % end of Question 1
 %% Changing the speed of the speech, without significantly modifying the tone of the speech
@@ -36,6 +67,17 @@ sound(y,sr/2);
 sound(y,sr*2);
 % Question 2
 
+% The time scaling property of the fourier transform can be used to explain
+% the phenomenon where when we play the audio signal at half speed, the
+% tone is significantly lower, and when we play the audio at double the
+% speed, the tone is significantly higher. We can note that if an aperiodic
+% signal x(t) is scaled in time by a to become x(at), that the fourier
+% transform of the new signal is (1/|a|)X((jw)/a). This shows that when the
+% signal is stretched or compressed in the time domain, the reciprocal
+% occurs in the frequency domain. For example, when the signal is stretched by
+% playing it at half speed (a = 0.5), there is a compression in the
+% frequency domain due to the X((jw)/a)) term => (X(2jw)), causing the frequencies to be 
+% lower and thus the audio tone to sound lower.
 
 % end of Question 2
 % Question 3: changing the length of x, without changing its general shape
